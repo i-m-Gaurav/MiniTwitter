@@ -5,10 +5,13 @@ import { getAuth, signInWithPopup, signOut, GoogleAuthProvider,onAuthStateChange
 import firebase from '@/utils/firebaseInfo';
 import Image from "next/image";
 import Todos from "@/components/Todos";
+import Nav from "@/components/Nav";
 
 const LoginPage = () => {
   const [user, setUser] = useState(null);
   const [todos, setTodos] = useState(null); // Define the 'todos' state
+  const [showLoginButton, setShowLoginButton] = useState(true);
+
 
   const auth = getAuth();
 
@@ -28,6 +31,7 @@ const LoginPage = () => {
         // User is signed in
         // Perform actions for an authenticated user
       } else {
+
         // User is signed out
         // Perform actions for a signed-out user
       }
@@ -63,32 +67,45 @@ const LoginPage = () => {
         console.log(error);
       });
   };
+  const handleLoginWithGoogle = () => {
+    setShowLoginButton(false);
+    signInWithGoogle();
+  };
 
   return (
     <div>
-       {user && (
-        <div>
-          <h1>Welcome, {user.displayName}</h1>
-          <Image 
-                src={user.photoURL}
-                alt="Profile"
-                height={42}
-                width={42}
-                
+          <Nav user={user}  handleSignOut={handleSignOut}/>
+
+    {!user && (
+      <OneTimeComponent onClick={handleLoginWithGoogle} />
 
 
-          />
-          <Todos userId={user.uid} />
-          {/* <TodoList /> */}
-          
-          <button onClick={handleSignOut}>Sign Out</button>
-        </div>
-      )}
-      {!user && (
-        <button onClick={signInWithGoogle}>Sign In with Google</button>
-      )}
+
+
+    )}
+
+    {user && (
+      <Todos userId={user.uid} user= {user}/>
+
+    )}
     </div>
+  
+    
   );
 };
 
+const OneTimeComponent = ({ onClick }) => {
+  return (
+    <div className="flex items-center justify-center max-h-64">
+      <div className="bg-gray-200 rounded-lg p-8">
+        <button
+          className="flex items-center justify-center bg-white rounded-full p-4"
+          onClick={onClick}
+        >
+          Login with Google
+        </button>
+      </div>
+    </div>
+  );
+};
 export default LoginPage;

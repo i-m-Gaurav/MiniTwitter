@@ -1,8 +1,10 @@
 'use client'
 import { useState, useEffect } from "react";
 import { getFirestore, collection, doc, setDoc, getDoc } from "firebase/firestore";
+import Image from "next/image";
+import firebase from 'firebase/app'
 
-const Todos = ({ userId }) => {
+const Todos = ({ userId ,user}) => {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState("");
   const firestore = getFirestore();
@@ -86,17 +88,68 @@ const Todos = ({ userId }) => {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        Add todos
-        <input required type="text" onChange={handleInput} value={newTodo} />
-        <button type="submit">Add</button>
-      </form>
+   <div className="max-w-[1240px] mx-auto px-4">
+  <form onSubmit={handleSubmit} className="text-gray-800 flex flex-col">
+    <label htmlFor="todoInput" className="mr-2">
+      Add todos
+    </label>
+    <textarea
+      required
+      id="todoInput"
+      onChange={handleInput}
+      value={newTodo}
+      className="w-96 h-40 rounded-md p-2 resize-none"
+    />
+    <button type="submit" className="bg-white text-blue-700 px-4 py-2 w-32 mt-2 rounded-md">
+      Add
+    </button>
+  </form>
 
+  <div className="max-w-[1240px] mx-auto">
+    <div className="flex flex-col-reverse items-start-reverse">
       {todos.map((todo, index) => (
-        <div key={index} onClick={() => handleDelete(index)}>
-          {todo}
+        <div
+          className="w-96 my-4 bg-[#ebebeb] rounded-lg shadow-lg relative"
+          key={index}
+        >
+          <div className="flex p-2">
+            <Image
+              src={user.photoURL}
+              width={35}
+              height={35}
+              alt="ProfileImage"
+              className="rounded-full"
+            />
+            <span className="flex items-center ml-2 text-gray-600 font-bold">
+              {user.displayName}
+            </span>
+          </div>
+          <hr className="border-white my-2" />
+          <div className="flex p-2 text-gray-600 overflow-hidden">
+            <div className="flex-grow">{todo}</div>
+          </div>
+          <div className="mr-4 flex justify-end bottom-2 right-2 flex space-x-2">
+            <button
+              className="text-blue-600 px-2 py-1 rounded-md"
+              onClick={() => handleEdit(index)}
+            >
+              Edit
+            </button>
+            <button
+              className="text-red-500 px-2 py-1 rounded-md"
+              onClick={() => handleDelete(index)}
+            >
+              Delete
+            </button>
+          </div>
         </div>
       ))}
+    </div>
+  </div>
+</div>
+
+
+
     </>
   );
 };
